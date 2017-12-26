@@ -52,7 +52,7 @@ import static java.security.AccessController.getContext;
                 at org.osmdroid.tileprovider.modules.MapTileModuleProviderBase$TileLoader.run(MapTileModuleProviderBase.java:297)
                 at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1133)
                 at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:607)
-                at java.lang.Thread.run(Thr
+                at java.lang.Thread.run(Thread.java:761)
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -116,6 +116,9 @@ public class MainActivity extends AppCompatActivity {
         new FileChooser(this).setFileListener(new FileChooser.FileSelectedListener() {
             @Override
             public void fileSelected(final File file) {
+                if( file == null) {
+                    return;
+                }
                 // Show the file
                 showMapsforgeFile(file);
             }
