@@ -58,7 +58,7 @@ import static java.security.AccessController.getContext;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_SETTING = 99;
     private static final int RESULT_PARAMS_SHOW_MAP = 11;
-    private static final String[] PARAMS_TAKE_PHOTO = {
+    private static final String[] PARAMS_SHOW_MAP = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
@@ -71,10 +71,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Don't set the content view ... because Osmdroid will immediately try to setup a cache.db.
+        //   Without the right Manifest and RUNTIME permissions, this will result in an error.
         checkPermissionForShowingTheMap();
     }
-    /* ONLINE EXAMPLE: private void selectAndShowMapsforgeFile() {
-        // ONLINE EXAMPLE ... can only move forward after having all permissions granted
+    /* ONLINE EXAMPLE: works
+    private void selectAndShowOnlineMap() {
         setContentView( R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -96,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     private void selectAndShowMapsforgeFile() {
-        // Build maps context
+        // Build maps context AFTER getting the Manifest & Runtime permissions.
+        // 1 - Set the VIEW context: mapview, toolbar and FAB
         setContentView( R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -108,10 +111,8 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
         mapView = (MapView) findViewById(R.id.mapview);
-        Toast.makeText(this, "You can take PHOTO", Toast.LENGTH_SHORT).show();
-        // Get the file
+        // Interactively select a Mapsforge file
         new FileChooser(this).setFileListener(new FileChooser.FileSelectedListener() {
             @Override
             public void fileSelected(final File file) {
@@ -127,8 +128,10 @@ public class MainActivity extends AppCompatActivity {
         fromFiles = MapsForgeTileSource.createFromFiles( files);
         forge = new MapsForgeTileProvider( new SimpleRegisterReceiver( getBaseContext()), fromFiles);
         mapView.setTileProvider(forge);
-        mapView.getController().setZoom( 9);
-        GeoPoint startPoint = new GeoPoint(52.2222, 36.6123);
+        IMapController mapController = mapView.getController();
+        mapController.setZoom(13);
+        GeoPoint startPoint = new GeoPoint(52.2222, 6.6123);
+        mapController.setCenter(startPoint);
     }
 
     @Override
@@ -147,14 +150,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkPermissionForShowingTheMap() {
         if ( alreadyGrantedPermissionToShowMap()) {
-            Toast.makeText(this, "You can show the map", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "You already gave permissions ... ", Toast.LENGTH_SHORT).show();
             selectAndShowMapsforgeFile();
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) &&
                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             Toast.makeText(this, "You should give permission", Toast.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(this, netPermisssion(PARAMS_TAKE_PHOTO), RESULT_PARAMS_SHOW_MAP);
+            ActivityCompat.requestPermissions(this, netPermisssion( PARAMS_SHOW_MAP), RESULT_PARAMS_SHOW_MAP);
         } else {
-            ActivityCompat.requestPermissions(this, netPermisssion(PARAMS_TAKE_PHOTO), RESULT_PARAMS_SHOW_MAP);
+            ActivityCompat.requestPermissions(this, netPermisssion( PARAMS_SHOW_MAP), RESULT_PARAMS_SHOW_MAP);
         }
     }
 
