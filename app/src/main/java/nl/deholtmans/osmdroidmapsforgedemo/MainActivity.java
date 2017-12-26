@@ -149,14 +149,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermissionForShowingTheMap() {
+        // Step 1 - check if you gave already sufficient permissions: checkSelfPermission()
         if ( alreadyGrantedPermissionToShowMap()) {
             Toast.makeText(this, "You already gave permissions ... ", Toast.LENGTH_SHORT).show();
             selectAndShowMapsforgeFile();
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) &&
                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Toast.makeText(this, "You should give permission", Toast.LENGTH_SHORT).show();
+            // Should we show an explanation?
+            Toast.makeText(this, "Further explanation ... You should give permission to get show the map", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, netPermisssion( PARAMS_SHOW_MAP), RESULT_PARAMS_SHOW_MAP);
         } else {
+            // No explanation needed, we can request the permission.
+            Toast.makeText(this, "No explanation needed ...  ", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, netPermisssion( PARAMS_SHOW_MAP), RESULT_PARAMS_SHOW_MAP);
         }
     }
@@ -177,44 +181,24 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasPermission(String permissionString) {
         return (ContextCompat.checkSelfPermission(this, permissionString) == PackageManager.PERMISSION_GRANTED);
     }
+    // When your app requests permissions, the system presents a dialog box to the user. When the user responds, the system
+    // invokes your app's onRequestPermissionsResult() method, passing it the user response.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == RESULT_PARAMS_SHOW_MAP) {
-            if (alreadyGrantedPermissionToShowMap()) {
-                Toast.makeText(this, "You can take picture", Toast.LENGTH_SHORT).show();
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "OK, thank you, showing the map ... ", Toast.LENGTH_SHORT).show();
+                // permission was granted, yay! Do the contacts-related task you need to do.
                 selectAndShowMapsforgeFile();
-            } else if (!(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
-
-                final AlertDialog.Builder settingDialog = new AlertDialog.Builder( MainActivity.this);
-                settingDialog.setTitle("Permissioin");
-                settingDialog.setMessage("Now you need to enable permisssion from the setting because without permission this app won't run properly \n\n  goto -> setting -> appInfo");
-                settingDialog.setCancelable(false);
-                settingDialog.setPositiveButton("Setting", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                        Toast.makeText(getBaseContext(), "Go to Permissions to Grant all permission ENABLE", Toast.LENGTH_LONG).show();
-                    }
-                });
-                settingDialog.show();
-                Toast.makeText(this, "You need to grant permission from setting", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "No permissions granted, no maps! ", Toast.LENGTH_SHORT).show();
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
             }
+            return;
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_PERMISSION_SETTING) {
-            if (alreadyGrantedPermissionToShowMap()) {
-                selectAndShowMapsforgeFile();
-            }
-        }
+        // other 'case' lines to check for other permissions this app might request
     }
 }
