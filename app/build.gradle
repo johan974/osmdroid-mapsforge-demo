@@ -31,6 +31,10 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
 
+    compile 'org.osmdroid:osmdroid-mapsforge:5.5:release@aar'
+    compile 'org.mapsforge:mapsforge-map-android:0.6.1'
+    compile 'org.mapsforge:mapsforge-map:0.6.1'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
