@@ -125,16 +125,31 @@ public class MainActivity extends AppCompatActivity {
         }).showDialog();
     }
     private void showMapsforgeFile( File mapFile) {
-        File[] files = new File[1];
-        files[0] = mapFile;
+        File[] maps = new File[1];
+        maps[0] = mapFile;
         MapsForgeTileSource.createInstance( this.getApplication());
-        fromFiles = MapsForgeTileSource.createFromFiles( files);
-        forge = new MapsForgeTileProvider( new SimpleRegisterReceiver( getBaseContext()), fromFiles);
+        XmlRenderTheme theme = null;
+        try {
+            theme = new AssetsRenderTheme(this.getApplicationContext(), "renderthemes/", "rendertheme-v4.xml");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        fromFiles = MapsForgeTileSource.createFromFiles(maps, theme, "rendertheme-v4");
+        forge = new MapsForgeTileProvider(
+            new SimpleRegisterReceiver(this),
+            fromFiles, null);
+
+
         mapView.setTileProvider(forge);
-        IMapController mapController = mapView.getController();
-        mapController.setZoom(13);
-        GeoPoint startPoint = new GeoPoint(52.2222, 6.6123);
-        mapController.setCenter(startPoint);
+
+
+        //now for a magic trick
+        //since we have no idea what will be on the
+        //user's device and what geographic area it is, this will attempt to center the map
+        //on whatever the map data provides
+        mapView.getController().setZoom(fromFiles.getMinimumZoomLevel());
+        mapView.zoomToBoundingBox(fromFiles.getBoundsOsmdroid(), true);
     }
 
     @Override
