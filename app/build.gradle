@@ -24,13 +24,11 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:design:25.4.0'
 
-    compile 'com.github.MKergall:osmbonuspack:6.4'
-    // compile(name:'osmbonuspack_v6.4', ext:'aar')
-    compile 'org.osmdroid:osmdroid-android:5.6.5'
+    compile 'com.github.MKergall:osmbonuspack:6.1'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-
+    compile 'org.osmdroid:osmdroid-android:5.5'
     compile 'org.osmdroid:osmdroid-mapsforge:5.5:release@aar'
     compile 'org.mapsforge:mapsforge-map-android:0.6.1'
     compile 'org.mapsforge:mapsforge-map:0.6.1'
